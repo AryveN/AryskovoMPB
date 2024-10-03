@@ -14,7 +14,9 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.reflections.Reflections;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -55,17 +57,19 @@ public class Main {
         client.useHelpBuilder(false);
         Logger.debug("Client setting set up.");
 
-        JDABuilder jdaBuilder;
-
         //Command loading
         Logger.info("Loading commands...");
-        client.addCommands(getCommands());
-        client.addSlashCommands(getSlashCommands());
-        //loadCommands();
+        Command[] commands = getCommands();
+        SlashCommand[] slashCommands = getSlashCommands();
+        client.addCommands(commands);
+        Logger.debug(commands.length + " Commands loaded!");
+        client.addSlashCommands(slashCommands);
+        Logger.debug(slashCommands.length + " SlashCommands loaded!");
 
         //Finalize command loading
         CommandClient commandClient = client.build();
 
+        //Login
         Logger.info("Trying to login...");
         try {
 
@@ -116,7 +120,7 @@ public class Main {
             // Attempt to add commands by instantiating the declared constructor
             try {
                 commands.add(theClass.getDeclaredConstructor().newInstance());
-                Logger.debug("Command loaded succesfully!");
+                Logger.debug("Command loaded successfully.");
                 //LoggerFactory.getLogger(theClass).debug("Loaded Command Successfully!");
             } catch (Throwable throwable) {
                 Logger.error("Error loading Command!\n" + throwable);
@@ -133,7 +137,7 @@ public class Main {
      * @return an array of commands
      */
     private static SlashCommand[] getSlashCommands() {
-        Reflections reflections = new Reflections("pw.chew.chewbotcca.commands");
+        Reflections reflections = new Reflections("com.aryven.aryskovompb.commands");
         Set<Class<? extends SlashCommand>> subTypes = reflections.getSubTypesOf(SlashCommand.class);
         List<SlashCommand> commands = new ArrayList<>();
 
@@ -147,7 +151,7 @@ public class Main {
                 Logger.error("Error loading SlashCommand!\n" + throwable);
                 //LoggerFactory.getLogger(theClass).error("Failed to load SlashCommand!", throwable);
             }
-            Logger.debug("Loaded SlashCommand successfully!");
+            Logger.debug("SlashCommand loaded successfully!");
             //LoggerFactory.getLogger(theClass).debug("Loaded SlashCommand Successfully!");
         }
 
@@ -155,19 +159,3 @@ public class Main {
     }
 
 }
-
-
-
-/*
-class BotListener extends ListenerAdapter {
-    @Override
-    public void onReady(net.dv8tion.jda.api.events.session.ReadyEvent event) {
-        // Register the slash commands with JDA 5
-        event.getJDA().updateCommands()
-                .addCommands(Commands.slash("help", "Displays help information"))
-                .queue();
-        Logger.info("Slash commands registered.");
-    }
-
-}
- */
