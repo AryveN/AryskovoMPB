@@ -9,7 +9,7 @@ import java.awt.*;
 public class Embeds {
     public MessageEmbed help() {
         EmbedBuilder help = new EmbedBuilder();
-        help.setTitle("❓ 〃 Help");
+        help.setTitle("❓ 〃 Help - Update");
         help.setDescription("All commands are slash commands. They can be invoked with /<command name>");
         help.addField("Currently available commands:", """
                         /help - Shows this message\n

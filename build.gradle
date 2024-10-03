@@ -9,7 +9,7 @@ version '0.1.7'
 repositories {
     flatDir { dirs 'libs' }
     mavenCentral()
-    maven { url "https://m2.chew.pro/snapshots" }
+    maven { url "https://m2.chew.pro/releases" }
     jcenter()
 }
 
@@ -17,9 +17,12 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 
+    implementation 'pw.chew:jda-chewtils:2.0'
     implementation("net.dv8tion:JDA:5.1.1")
 
+
     implementation 'com.google.code.gson:gson:2.8.9'
+    implementation 'org.reflections:reflections:0.10.2'
 
     implementation group: 'org.slf4j', name:'slf4j-api', version: '1.7.32'
     implementation group: 'ch.qos.logback', name:'logback-classic', version: '1.2.6'
