@@ -7,7 +7,6 @@ import com.jagrosh.jdautilities.command.CommandClient;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
 import com.jagrosh.jdautilities.command.SlashCommand;
 import dev.mayuna.mayuslibrary.console.colors.Color;
-import dev.mayuna.mayuslibrary.logging.Log;
 import dev.mayuna.mayuslibrary.logging.Logger;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -15,9 +14,7 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.reflections.Reflections;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -87,6 +84,8 @@ public class Main {
         }
 
         Logger.info("Loading done!");
+
+
     }
 
     /*
@@ -159,3 +158,4 @@ public class Main {
     }
 
 }
+
