@@ -7,6 +7,7 @@ import com.jagrosh.jdautilities.command.CommandClient;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
 import com.jagrosh.jdautilities.command.SlashCommand;
 import dev.mayuna.mayuslibrary.console.colors.Color;
+import dev.mayuna.mayuslibrary.logging.Log;
 import dev.mayuna.mayuslibrary.logging.Logger;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -62,9 +63,7 @@ public class Main {
         Command[] commands = getCommands();
         SlashCommand[] slashCommands = getSlashCommands();
         client.addCommands(commands);
-        Logger.debug(commands.length + " Commands loaded!");
         client.addSlashCommands(slashCommands);
-        Logger.debug(slashCommands.length + " SlashCommands loaded!");
 
         //Finalize command loading
         CommandClient commandClient = client.build();
@@ -120,14 +119,14 @@ public class Main {
             // Attempt to add commands by instantiating the declared constructor
             try {
                 commands.add(theClass.getDeclaredConstructor().newInstance());
-                Logger.debug("Command loaded successfully.");
+                Logger.debug(theClass.getSimpleName() + " Command loaded successfully.");
                 //LoggerFactory.getLogger(theClass).debug("Loaded Command Successfully!");
             } catch (Throwable throwable) {
                 Logger.error("Error loading Command!\n" + throwable);
                 //LoggerFactory.getLogger(theClass).error("Error loading Command!", throwable);
             }
         }
-
+        Logger.debug(commands.size() + " Commands Loaded!");
         return commands.toArray(new Command[0]);
     }
 
@@ -151,10 +150,11 @@ public class Main {
                 Logger.error("Error loading SlashCommand!\n" + throwable);
                 //LoggerFactory.getLogger(theClass).error("Failed to load SlashCommand!", throwable);
             }
-            Logger.debug("SlashCommand loaded successfully!");
+            Logger.debug(theClass.getSimpleName() + " SlashCommand loaded successfully!");
             //LoggerFactory.getLogger(theClass).debug("Loaded SlashCommand Successfully!");
         }
 
+        Logger.debug(commands.size() + " SlashCommands Loaded");
         return commands.toArray(new SlashCommand[0]);
     }
 

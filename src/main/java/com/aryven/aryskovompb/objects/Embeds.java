@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 
 import java.awt.*;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class Embeds {
@@ -36,6 +37,7 @@ public class Embeds {
         long onlineCount = guild.getMembers().stream().filter(u -> u.getOnlineStatus() != OnlineStatus.OFFLINE).count();
         long botCount = guild.getMembers().stream().filter(m -> m.getUser().isBot()).count();
 
+        /*
         String str = LINESTART + "ID: **" + guild.getId() + "**\n"
                 + LINESTART + "Owner: **" + owner.getUser().getAsTag() + "**\n";
         if (!guild.getVoiceChannels().isEmpty()) {
@@ -56,8 +58,32 @@ public class Embeds {
         if(guild.getIconUrl()!=null)
             serverInfo.setThumbnail(guild.getIconUrl());
 
+         */
+
+        long onlineMembers = guild.getMemberCache().stream()
+                .filter(member -> {
+                    OnlineStatus status = member.getOnlineStatus();
+                    return status == OnlineStatus.ONLINE || status == OnlineStatus.DO_NOT_DISTURB || status == OnlineStatus.IDLE;
+                })
+                .count();
+
+        OffsetDateTime creationTime = event.getGuild().getTimeCreated();
+        long creationTimestamp = creationTime.toEpochSecond();
+        String formattedTimestamp = "<t:" + creationTimestamp + ":F>";
+
+
         serverInfo.setTitle("❓ 〃" + guild.getName() + " Info");
-        serverInfo.setDescription(str);
+        //serverInfo.setDescription(str);
+        serverInfo.addField("Owner", owner.getUser().getAsMention(), false);
+        serverInfo.addField("Text Channels", String.valueOf(guild.getTextChannelCache().size()), true);
+        serverInfo.addField("Voice Channels", String.valueOf(guild.getVoiceChannelCache().size()), true);
+        serverInfo.addField("Categories", String.valueOf(guild.getCategoryCache().size()) ,true);
+        serverInfo.addField("Online Members", String.valueOf(onlineMembers), true);
+        serverInfo.addField("Members", String.valueOf(guild.getMembers().size()), true);
+        serverInfo.addField("Roles", String.valueOf(guild.getRoleCache().size()), true);
+        serverInfo.addField("Created at", formattedTimestamp, false);
+        serverInfo.setFooter("Server ID: " + guild.getId());
+        serverInfo.setThumbnail(guild.getIconUrl());
         serverInfo.setColor(Color.decode("#add8e6"));
         return serverInfo.build();
     }
