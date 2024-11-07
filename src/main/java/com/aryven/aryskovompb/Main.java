@@ -1,6 +1,7 @@
 package com.aryven.aryskovompb;
 
 import com.aryven.aryskovompb.listeners.MusicController;
+import com.aryven.aryskovompb.listeners.ToDoController;
 import com.aryven.aryskovompb.objects.Config;
 import com.aryven.aryskovompb.objects.customColoring;
 import com.jagrosh.jdautilities.command.Command;
@@ -76,7 +77,7 @@ public class Main {
                      .enableIntents(GatewayIntent.GUILD_MEMBERS)
                      .enableIntents(GatewayIntent.DIRECT_MESSAGES)
                      .enableIntents(GatewayIntent.DIRECT_MESSAGE_REACTIONS)
-                     .addEventListeners(commandClient)
+                     .addEventListeners(commandClient, new ToDoController())
                      .build();
 
         } catch (Exception e) {

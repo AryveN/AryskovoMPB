@@ -23,6 +23,7 @@ public class Embeds {
         help.addField("Currently available commands:", """
                         /help - Shows this message
                         /serverInfo - Shows server info about the server
+                        /studyweek - Tells you the current study week
         """,false);
         help.setColor(Color.decode("#ce5253"));
         return help.build();
@@ -69,7 +70,7 @@ public class Embeds {
         EmbedBuilder studyWeek = new EmbedBuilder();
         studyWeek.setTitle("\uD83D\uDCC5 〃 Study Week");
         studyWeek.setDescription("Today is `" + LocalDate.now() + "`");
-        studyWeek.addField("Current study week","This week is `"+ weeksElapsed +"` week.",false);
+        studyWeek.addField("Current study week","This week is `"+ weeksElapsed +".` week.",false);
         studyWeek.setColor(Color.decode("#ce5253"));
         return studyWeek.build();
     }
