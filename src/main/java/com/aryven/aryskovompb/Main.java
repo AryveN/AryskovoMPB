@@ -76,7 +76,7 @@ public class Main {
                      .enableIntents(GatewayIntent.GUILD_MEMBERS)
                      .enableIntents(GatewayIntent.DIRECT_MESSAGES)
                      .enableIntents(GatewayIntent.DIRECT_MESSAGE_REACTIONS)
-                     .addEventListeners(commandClient, new MusicController())
+                     .addEventListeners(commandClient)
                      .build();
 
         } catch (Exception e) {

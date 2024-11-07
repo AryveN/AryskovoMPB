@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'com.aryven.aryskovompb'
-version '0.1.9.2'
+version '0.1.9.3'
 
 repositories {
     flatDir { dirs 'libs' }
@@ -50,7 +50,7 @@ shadowJar {
     manifest {
         attributes 'Main-Class': 'com.aryven.aryskovompb.Main'
     }
-    archiveName("ampb_0.1.9.2.jar")
+    archiveName("ampb_0.1.9.3.jar")
 }
 
 build.dependsOn shadowJar

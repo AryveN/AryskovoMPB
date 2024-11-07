@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
 import java.awt.*;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -62,5 +63,14 @@ public class Embeds {
         serverInfo.setThumbnail(guild.getIconUrl());
         serverInfo.setColor(Color.decode("#add8e6"));
         return serverInfo.build();
+    }
+
+    public MessageEmbed studyweek(long weeksElapsed) {
+        EmbedBuilder studyWeek = new EmbedBuilder();
+        studyWeek.setTitle("\uD83D\uDCC5 〃 Study Week");
+        studyWeek.setDescription("Today is `" + LocalDate.now() + "`");
+        studyWeek.addField("Current study week","This week is `"+ weeksElapsed +"` week.",false);
+        studyWeek.setColor(Color.decode("#ce5253"));
+        return studyWeek.build();
     }
 }
