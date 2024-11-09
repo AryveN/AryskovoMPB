@@ -1,49 +1,64 @@
 package com.aryven.aryskovompb.commands;
 
+import com.aryven.aryskovompb.listeners.ToDoController;
+import com.aryven.aryskovompb.objects.Embeds;
+import com.aryven.aryskovompb.objects.ToDoModal;
 import com.aryven.aryskovompb.objects.ToDoTask;
 import com.jagrosh.jdautilities.command.SlashCommand;
 import com.jagrosh.jdautilities.command.SlashCommandEvent;
-import lombok.Getter;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.commands.build.Commands;
-import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class ToDo extends SlashCommand {
-
-    private final List<ToDoTask> tasks = new ArrayList<>();
+    private final ToDoController toDoController;
 
     public ToDo() {
         this.name = "todo";
         this.help = "Show To-Do list";
         this.guildOnly = false;
-
-        SlashCommandData commandData = CommandData("todo", "Show To-Do list")
-                .addOption(OptionType.STRING, "date", "Date to show To-Do list for", false);
+        this.aliases = new String[] {"task"};
+        this.toDoController = new ToDoController();
+        this.children = new SlashCommand[] {
+                new ToDoListSubCommand(),
+                new ToDoCreateSubCommand()
+        };
     }
 
     @Override
     protected void execute(SlashCommandEvent event) {
-        String dateStr = event.getOption("date") != null ? Objects.requireNonNull(event.getOption("date")).getAsString() : null;
-        LocalDate dateFilter = dateStr != null ? LocalDate.parse(dateStr) : null;
+        //Bum bo nam bo
+    }
 
-        List<ToDoTask> filteredTasks = tasks.stream()
-                .filter(task -> dateFilter == null || task.getDueDate().equals(dateFilter))
-                .toList();
+    private class ToDoListSubCommand extends SlashCommand {
+        public ToDoListSubCommand() {
+            this.name = "list";
+            this.help = "Show list of tasks in To-Do list";
+            this.guildOnly = false;
+        }
 
-        if (filteredTasks.isEmpty()) {
-            event.reply("No tasks found.").setEphemeral(true).queue();
-        } else {
-            StringBuilder response = new StringBuilder("Tasks:\n");
-            for (ToDoTask task : filteredTasks) {
-                response.append(task.toString()).append("\n");
+        @Override
+        protected void execute(SlashCommandEvent event) {
+            List<ToDoTask> tasks = toDoController.getTasks();
+
+            if (tasks.isEmpty()) {
+                event.replyEmbeds(new Embeds().todoListEmptyEmbed()).setEphemeral(true).queue();
+                return;
             }
-            event.reply(response.toString()).queue();
+
+            event.replyEmbeds(new Embeds().todoListEmbed(tasks)).setEphemeral(true).queue();
+        }
+    }
+
+    private class ToDoCreateSubCommand extends SlashCommand {
+        public ToDoCreateSubCommand() {
+            this.name = "create";
+            this.help = "Add task to To-Do list";
+            this.guildOnly = false;
+        }
+
+        @Override
+        protected void execute(SlashCommandEvent event) {
+            event.replyModal(new ToDoModal().createToDoModal(event)).queue();
         }
     }
 }

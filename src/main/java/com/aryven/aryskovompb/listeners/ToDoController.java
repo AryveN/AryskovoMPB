@@ -1,10 +1,10 @@
 package com.aryven.aryskovompb.listeners;
 
+import com.aryven.aryskovompb.objects.Embeds;
 import com.aryven.aryskovompb.objects.LocalDateAdapter;
 import com.aryven.aryskovompb.objects.ToDoTask;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import dev.mayuna.mayuslibrary.logging.Logger;
@@ -16,7 +16,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class ToDoController extends ListenerAdapter {
     private final List<ToDoTask> tasks = new ArrayList<>();
     private final Gson gson = new GsonBuilder()
             .setPrettyPrinting()
-            .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+            .registerTypeAdapter(LocalDateTime.class, new LocalDateAdapter())
             .create();
     private final String FILE_PATH = "tasks.json";
 
@@ -37,6 +38,7 @@ public class ToDoController extends ListenerAdapter {
             Type listType = new TypeToken<ArrayList<ToDoTask>>(){}.getType();
             List<ToDoTask> loadedTasks = gson.fromJson(reader, listType);
             if (loadedTasks != null) {
+                tasks.clear();
                 tasks.addAll(loadedTasks);
             }
             Logger.debug("Tasks loaded from file.");
@@ -67,20 +69,29 @@ public class ToDoController extends ListenerAdapter {
     @Override
     public void onModalInteraction(ModalInteractionEvent event) {
         if (event.getModalId().equals("todo_modal")) {
+            ModalMapping nameInput = event.getValue("name_input");
             ModalMapping taskInput = event.getValue("task_input");
             ModalMapping dateInput = event.getValue("date_input");
 
-            if (taskInput != null && dateInput != null) {
+            if (nameInput != null && dateInput != null) {
+                String taskName = nameInput.getAsString();
                 String taskDescription = taskInput.getAsString();
-                LocalDate dueDate = LocalDate.parse(dateInput.getAsString());
 
-                ToDoTask newTask = new ToDoTask(taskDescription, dueDate);
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+                LocalDateTime dueDate = LocalDateTime.parse(dateInput.getAsString(), formatter);
+
+                ToDoTask newTask = new ToDoTask(taskName, taskDescription, dueDate);
                 addTask(newTask);
 
-                event.reply("Task added:\n" + newTask).queue();
+                event.replyEmbeds(new Embeds().todoCreateEmbed(newTask)).setEphemeral(true).queue();
             } else {
-                event.reply("Failed to add task.").setEphemeral(true).queue();
+                event.replyEmbeds(new Embeds().todoCreateFailedEmbed()).setEphemeral(true).queue();
             }
         }
+    }
+
+    public List<ToDoTask> getTasks() {
+        loadTasks();
+        return tasks;
     }
 }

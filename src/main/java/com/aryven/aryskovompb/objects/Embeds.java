@@ -1,19 +1,19 @@
 package com.aryven.aryskovompb.objects;
 
 import com.jagrosh.jdautilities.command.SlashCommandEvent;
-import dev.mayuna.mayuslibrary.logging.Logger;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
 import java.awt.*;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 public class Embeds {
     public MessageEmbed help() {
@@ -73,5 +73,73 @@ public class Embeds {
         studyWeek.addField("Current study week","This week is `"+ weeksElapsed +".` week.",false);
         studyWeek.setColor(Color.decode("#ce5253"));
         return studyWeek.build();
+    }
+
+    public MessageEmbed todoListEmbed(List<ToDoTask> tasks) {
+        //Sort Tasks
+        tasks.sort(Comparator.comparing(ToDoTask::getDueDate));
+        //Group tasks by due date
+        Map<LocalDate, List<ToDoTask>> tasksByDate = tasks.stream()
+                .collect(Collectors.groupingBy(task -> task.getDueDate().toLocalDate()));
+
+        List<LocalDate> sortedDates = tasksByDate.keySet().stream()
+                .sorted()
+                .collect(Collectors.toList());
+
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+
+        EmbedBuilder todoListEmbed = new EmbedBuilder();
+        for (LocalDate date : sortedDates) {
+            List<ToDoTask> taskList = tasksByDate.get(date);
+            StringBuilder taskDescription = new StringBuilder();
+            for(ToDoTask task : taskList) {
+                LocalDateTime dueDateTime = task.getDueDate();
+                String dueTime = dueDateTime.format(timeFormatter);
+
+                ZoneId pragueZoneId = ZoneId.of("Europe/Prague");
+                long timestamp = dueDateTime.atZone(pragueZoneId).toEpochSecond();
+
+                taskDescription.append(task.getName())
+                        .append(" - ")
+                        .append(dueTime)
+                        .append(" (<t:").append(timestamp).append(":R>)\n");
+            }
+            todoListEmbed.addField(dateFormatter.format(date), taskDescription.toString(), false);
+        }
+
+        todoListEmbed.setTitle("\uD83D\uDDD2\uFE0F 〃 To-Do List");
+        todoListEmbed.setColor(Color.decode("#ce5253"));
+        return todoListEmbed.build();
+    }
+
+    public MessageEmbed todoListEmptyEmbed() {
+        EmbedBuilder todoListEmptyEmbed = new EmbedBuilder();
+        todoListEmptyEmbed.setTitle("\uD83D\uDDD2\uFE0F 〃 To-Do List");
+        todoListEmptyEmbed.setDescription("No tasks in the To-Do list.");
+        todoListEmptyEmbed.setColor(Color.decode("#ce5253"));
+        return todoListEmptyEmbed.build();
+    }
+
+    public MessageEmbed todoCreateEmbed(ToDoTask newTask) {
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+        String dueDate = newTask.getDueDate().format(formatter);
+
+        EmbedBuilder todoCreateEmbed = new EmbedBuilder();
+        todoCreateEmbed.setTitle("\uD83D\uDDD2\uFE0F 〃 Task Created");
+        todoCreateEmbed.addField(newTask.getName(),newTask.getDescription(),true);
+        todoCreateEmbed.addField("Due Date",dueDate,true);
+        todoCreateEmbed.setFooter("Task ID: " + newTask.getId());
+        todoCreateEmbed.setColor(Color.decode("#45cc23"));
+        return todoCreateEmbed.build();
+    }
+
+    public MessageEmbed todoCreateFailedEmbed() {
+        EmbedBuilder todoCreateFailedEmbed = new EmbedBuilder();
+        todoCreateFailedEmbed.setTitle("\uD83D\uDDD2\uFE0F 〃 Task Creation Failed");
+        todoCreateFailedEmbed.addField("Please Try Again","Check if you filled in all the fields with the right parameters.",false);
+        todoCreateFailedEmbed.setColor(Color.decode("#ce5253"));
+        return todoCreateFailedEmbed.build();
     }
 }
