@@ -142,4 +142,20 @@ public class Embeds {
         todoCreateFailedEmbed.setColor(Color.decode("#ce5253"));
         return todoCreateFailedEmbed.build();
     }
+
+    public MessageEmbed todoTaskEmbed(ToDoTask task) {
+        EmbedBuilder todoTaskEmbed = new EmbedBuilder();
+        todoTaskEmbed.setTitle("\uD83D\uDDD2\uFE0F 〃 " + task.getName());
+        todoTaskEmbed.setDescription(task.getDescription());
+
+        ZoneId pragueZoneId = ZoneId.of("Europe/Prague");
+        long timestamp = task.getDueDate().atZone(pragueZoneId).toEpochSecond();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+        String dueDate = task.getDueDate().format(formatter);
+
+        todoTaskEmbed.addField("Due Date:", dueDate + " (<t:"+timestamp+":R>)", false);
+        todoTaskEmbed.setFooter("Task ID: " + task.getId());
+        todoTaskEmbed.setColor(Color.decode("#ce5253"));
+        return todoTaskEmbed.build();
+    }
 }

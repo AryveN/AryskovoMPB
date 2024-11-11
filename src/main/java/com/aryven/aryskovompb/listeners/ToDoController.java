@@ -61,7 +61,10 @@ public class ToDoController extends ListenerAdapter {
         saveTasks();
     }
 
-    private void removeTask(ToDoTask task) {
+    public void editTask(ToDoTask task) {
+        //Pompompurin
+    }
+    public void removeTask(ToDoTask task) {
         tasks.remove(task);
         saveTasks();
     }
